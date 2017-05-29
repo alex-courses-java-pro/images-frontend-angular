@@ -1,9 +1,24 @@
-<div>
-  <input type="text" (change)="getId($event)"/> 
-  <input type="submit" value="Search" (click)="searchForImage()"/>
+<div class="row form-group">
+	<div class="col-lg-4">
+		<input class="form-control" type="text" placeholder="Image id"
+			(change)="getId($event)" />
+		<button class="btn btn-default pull-right" (click)="searchForImage()">
+			Search</button>
+	</div>
 </div>
-
-<div>
-  <input type="file" (change)="getFiles($event)"/> 
-  <input type="submit" value="Upload" (click)="upload()"/>
+<div class="row">
+	<div class="col-lg-4">
+	<div class="input-group">
+		<label class="input-group-btn">
+		<span class="btn btn-info">
+			 Browse&hellip;
+			<input type="file"
+			style="display: none" (change)="getFiles($event)"
+			accept=".png,.jpg,.jpeg" />	 
+		</span> 
+		</label> 
+		<input type="text" class="form-control" value="{{fileName}}" disabled>
+		</div>
+		<button class="btn btn-default pull-right" (click)="upload()">Upload</button>
+	</div>
 </div>

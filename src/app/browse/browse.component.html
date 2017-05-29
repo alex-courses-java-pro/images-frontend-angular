@@ -1,5 +1,19 @@
-<div *ngFor="let image of images">
-  {{image.id}}
-  <br>
-  <img src={{image.uri}} class="img-thumbnail" width="400" height="300">
+<div>
+	<button (click)="onDownload()" class="btn">Download selected
+		as zip</button>
+	<button (click)="onDelete()" class="btn">Delete selected</button>
 </div>
+
+<form [formGroup]="imagesFG.controls['checkboxes']">
+	<div class="row" *ngFor="let image of images">
+		<div class="col-md-12 col-xs-12 col-lg-6 col-sm-12">
+			<div class="thumbnail">
+				<a href="{{image.uri}}" target="_blank"> <img src={{image.uri}}>
+				</a>
+				<div class="caption">
+					<label><input type="checkbox" [formControlName]="image.id">{{image.id}}</label>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>

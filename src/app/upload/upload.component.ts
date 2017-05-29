@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 export class UploadComponent implements OnInit {
   files: FileList;
   imageId: number;
+  fileName = '';
 
   constructor(private imagesService: ImagesService,
     private router: Router) { }
@@ -18,11 +19,17 @@ export class UploadComponent implements OnInit {
   }
 
   upload() {
-    this.imagesService.uploadImage(this.files[0]);
+    this.imagesService.uploadImage(this.files[0])
+      .subscribe(res => {
+        this.imageId = res;
+        this.searchForImage();
+      });
   }
 
   getFiles(event: any) {
     this.files = event.target.files;
+    this.fileName = this.files[0].name;
+    console.log(this.files[0]);
   }
 
   getId(event: any) {
@@ -31,6 +38,6 @@ export class UploadComponent implements OnInit {
 
   searchForImage() {
     console.log(this.imageId);
-    this.router.navigate(['/view', { imageId: this.imageId }]);
+    this.router.navigate(['/view', this.imageId]);
   }
 }

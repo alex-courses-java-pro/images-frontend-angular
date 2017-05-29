@@ -1,5 +1,7 @@
+import { Image } from '../model/image';
 import { ImagesService } from '../service/images.service';
 import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-browse',
@@ -7,28 +9,36 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./browse.component.css']
 })
 export class BrowseComponent implements OnInit {
-  images: Array<any> = [];
+  imagesFG: FormGroup;
 
-  constructor(private imgsService: ImagesService) { }
+  images: Array<Image> = [];
+  ids: Array<number> = [];
+
+  constructor(
+    private fbuilder: FormBuilder,
+    private imgsService: ImagesService
+  ) { }
 
   ngOnInit() {
+    this.imagesFG = this.fbuilder.group({
+      checkboxes: this.fbuilder.group({})
+    });
+
     this.getImages();
-    console.log(this.images);
   }
 
   getImages() {
     this.imgsService.getAllImages().subscribe(
-      data => {
-        data.images.forEach(image => {
-          this.images.push({
-            'id': image.id,
-            'uri': image.uri
-          });
+      res => {
+        this.images = <Image[]>res.images;
+        this.images.forEach(image => {
+          (<FormGroup>this.imagesFG.controls['checkboxes']).addControl(image.id.toString(), new FormControl(false));
         });
-      },
-      err => { console.log(err); }
+      }
     );
   }
+
+
 
   deleteImages(ids: number[]) {
     this.imgsService.deleteImages(ids);
@@ -37,9 +47,39 @@ export class BrowseComponent implements OnInit {
   downloadImages(ids: number[]) {
     this.imgsService.downloadZip(ids)
       .subscribe(res => {
-        // saveAs(res, 'images.zip');
         const fileUrl = URL.createObjectURL(res);
         window.open(fileUrl);
       });
   }
+
+  onDownload() {
+    let checkboxes: FormGroup = <FormGroup>this.imagesFG.controls['checkboxes'];
+    for (let image of this.images) {
+      let checkbox: FormControl = <FormControl>checkboxes.get(image.id.toString());
+      if (checkbox.value) {
+        this.ids.push(image.id);
+      }
+    }
+    console.log('ids to zip and download ' + this.ids);
+    this.downloadImages(this.ids);
+    this.ids = [];
+    this.getImages();
+  }
+
+  onDelete() {
+    let checkboxes: FormGroup = <FormGroup>this.imagesFG.controls['checkboxes'];
+    for (let image of this.images) {
+      let checkbox: FormControl = <FormControl>checkboxes.get(image.id.toString());
+      if (checkbox.value) {
+        this.ids.push(image.id);
+      }
+    }
+    console.log('ids to delete ' + this.ids);
+    this.imgsService.deleteImages(this.ids);
+    this.ids = [];
+    this.getImages();
+  }
+
 }
+
+

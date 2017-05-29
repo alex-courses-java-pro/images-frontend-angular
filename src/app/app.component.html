@@ -1,5 +1,9 @@
-<a routerLink="/upload">Upload/Search</a>
-<a routerLink="/browse">Browse</a>
-<br>
-
-<router-outlet></router-outlet>
+<div class="container">
+	<div class="row btn-group form-group">
+		<a routerLink="/upload" class="btn btn-primary">Upload/Search</a> <a
+			routerLink="/browse" class="btn btn-primary">Browse</a>
+	</div>
+	<div class="row">
+		<router-outlet></router-outlet>
+	</div>
+</div>

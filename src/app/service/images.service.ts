@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, RequestOptions, ResponseContentType } from '@angular/http';
+import {
+  Headers,
+  Http,
+  Response,
+  RequestOptions,
+  ResponseContentType
+} from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/Rx';
@@ -15,25 +21,42 @@ export class ImagesService {
       res => res.json());
   }
 
-  getImage(id: String) {
-    this.http.get(this.baseUrl + '/' + id).map(
+  getImage(id: number) {
+    return this.http.get(this.baseUrl + '/' + id).map(
       res => res.json()
-    ).subscribe(
-      data => { console.log(data); },
-      err => { console.log(err); }
-      );
+    );
   }
 
   deleteImages(ids: number[]) {
-    this.http.delete(this.baseUrl).map(
-      res => console.log(res)
-    ).subscribe(
-      err => { console.log(err); }
-      );
+    let headers: Headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    let options = new RequestOptions({
+      headers: headers,
+      body: ids
+    });
+
+    this.http.delete(this.baseUrl, options)
+      .map(res => console.log(res))
+      .subscribe(err => { console.log(err); });
   }
 
-  uploadImage(file: any) {
-    this.http.post(this.baseUrl, file).subscribe(res => { console.log(res); });
+  uploadImage(file: File) {
+    let formData: FormData = new FormData();
+    formData.append('image', file, file.name);
+
+    let headers: Headers = new Headers();
+    headers.append('Accept', 'application/json');
+
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.post(this.baseUrl, formData, options)
+      .map(res => res.json());
+      // .catch(err => Observable.throw(err))
+      // .subscribe(
+      // data => console.log(data),
+      // err => console.log(err)
+      // );
   }
 
   downloadZip(ids: number[]) {
@@ -43,4 +66,7 @@ export class ImagesService {
       });
   }
 
+  getBaseUrl() {
+    return this.baseUrl;
+  }
 }
